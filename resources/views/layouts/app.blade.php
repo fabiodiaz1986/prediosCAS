@@ -11,6 +11,8 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        
+        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -36,6 +38,14 @@
                 {{ $slot }}
             </main>
         </div>
+        
+        <script>
+            window.Alpine = window.Alpine || {};
+            window.deferLoadingAlpine = function (callback) {
+                window.addEventListener('alpine:initialized', callback);
+            };
+        </script>
+
         @livewireScripts
     </body>
 </html>

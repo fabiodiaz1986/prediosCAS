@@ -4,6 +4,8 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Predio;
+use App\Models\Municipio;
+
 
 class Predios extends Component
 {
@@ -12,10 +14,38 @@ class Predios extends Component
             $estado_ref, $ha_refores, $aisla_mts, $regen_natu, $observacio, $shape_leng, $shape_area;
     public $isOpen = false;
 
+     // NUEVOS CAMPOS
+    public $form_regional;
+    public $form_municipio_;
+    public $regionales = [];
+    public $municipios = [];
+
+    
+    public function mount()
+    {
+        $this->regionales = Municipio::select('provincia')
+            ->distinct()
+            ->orderBy('provincia')
+            ->pluck('provincia')
+            ->toArray();
+        
+    }
+
+    public function updatedFormRegional($value)
+    {
+        $this->form_municipio_ = null; // resetea el valor seleccionado
+        $this->municipios = Municipio::where('provincia', $value)
+            ->select('nom_munici') // Asegúrate de seleccionar el campo que necesitas
+            ->distinct()
+            ->orderBy('nom_munici')
+            ->pluck('nom_munici')
+            ->toArray();
+    }
+
     public function render()
     {
         return view('livewire.predios', [
-            'predios' => Predio::all() // Asegurar que pasamos la variable a la vista
+            'predios' => Predio::all()
         ]);
     }
 
@@ -29,20 +59,19 @@ class Predios extends Component
     {
         $this->validate([
             'nombre' => 'required',
-            'direccion' => 'required',
-            'latitud' => 'required|numeric',
-            'longitud' => 'required|numeric',
-            'area' => 'required|numeric',
-            'valor' => 'required|numeric',
+            'matricula' => 'required',
+            'regional' => 'required',
+            'municipio_' => 'required',
+            'ha_compra' => 'required|numeric',
         ]);
 
         Predio::updateOrCreate(['id' => $this->predio_id], [
             'nombre' => $this->nombre,
-            'direccion' => $this->direccion,
-            'latitud' => $this->latitud,
-            'longitud' => $this->longitud,
-            'area' => $this->area,
-            'valor' => $this->valor,
+            'matricula' => $this->matricula,
+            'regional' => $this->regional,
+            'municipio_' => $this->municipio_,
+            'ha_compra' => $this->ha_compra,
+            'ha_sig' => $this->ha_sig,
         ]);
 
         session()->flash('message', $this->predio_id ? 'Predio actualizado correctamente.' : 'Predio creado exitosamente.');
@@ -55,8 +84,8 @@ class Predios extends Component
     {
         $predio = Predio::findOrFail($id);
         $this->id = $id;
-        $this->geom = $geom->geom;        
-        $this->objectid = $objectid->objectid;
+        //$this->geom = $geom->geom;        
+        //$this->objectid = $objectid->objectid;
         $this->nombre = $nombre->nombre;
         $this->matricula = $matricula->matricula;        
         $this->regional = $regional->regional;
@@ -69,8 +98,8 @@ class Predios extends Component
         $this->aisla_mts = $aisla_mts->aisla_mts;
         $this->regen_natu = $regen_natu->regen_natu;
         $this->observacio = $observacio->observacio;
-        $this->shape_leng = $shape_leng->shape_leng;
-        $this->shape_area = $shape_area->shape_area;
+        //$this->shape_leng = $shape_leng->shape_leng;
+        //$this->shape_area = $shape_area->shape_area;
 
         $this->isOpen = true;
     }
@@ -85,12 +114,12 @@ class Predios extends Component
     private function resetInputFields()
     {
         $this->nombre = '';
-        $this->direccion = '';
-        $this->latitud = '';
-        $this->longitud = '';
-        $this->area = '';
-        $this->valor = '';
-        $this->predio_id = null;
+        $this->matricula = '';
+        $this->form_regional = '';
+        $this->form_municipio_ = '';
+        $this->ha_compra = '';
+        $this->ha_sig = '';
+        //$this->predio_id = null;
     }
 
     public function closeModal()
