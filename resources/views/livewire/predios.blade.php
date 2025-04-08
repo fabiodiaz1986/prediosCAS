@@ -12,14 +12,14 @@
         <table class="table table-striped table-bordered">
             <thead class="table-dark">
                 <tr>
-                    <th>Id</th>
-                    <th>Nombre</th>
-                    <th>Matricula</th>
-                    <th>Regional</th>
-                    <th>Municipio</th>
-                    <th>Ha Compra</th>
-                    <th>Ha Geog.</th>                    
-                    <th>Acción</th>
+                    <th class="text-center">Id</th>
+                    <th class="text-center">Nombre</th>
+                    <th class="text-center">Matricula</th>
+                    <th class="text-center">Regional</th>
+                    <th class="text-center">Municipio</th>
+                    <th class="text-center">Area Compra (Ha.)</th>
+                    <th class="text-center">Area SIG (Ha.)</th>                    
+                    <th class="text-center">Acción</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,8 +34,14 @@
                         <td>{{ $predio->ha_sig }}</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <button wire:click="edit({{ $predio->id }})" class="btn btn-warning btn-sm">Editar</button>
-                                <button wire:click="delete({{ $predio->id }})" class="btn btn-danger btn-sm">Eliminar</button>
+                                <button wire:click="edit({{ $predio->id }})" class="btn btn-warning btn-sm">
+                                    Editar
+                                    <span wire:loading wire:target="edit" class="spinner-border spinner-border-sm"></span>
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="confirmarEliminacion({{ $predio->id }})">
+                                    Eliminar
+                                    <span wire:loading wire:target="eliminarPredio" class="spinner-border spinner-border-sm"></span>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -94,11 +100,12 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button wire:click="store" class="btn btn-success">Guardar</button>
+                        <button wire:click="store" class="btn btn-success">Guardar </button>
                         <button wire:click="closeModal" class="btn btn-secondary">Cerrar</button>
                     </div>
                 </div>
             </div>
-        </div>
+        </div>        
     @endif
 </div>
+

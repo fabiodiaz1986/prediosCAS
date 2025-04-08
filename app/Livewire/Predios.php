@@ -20,6 +20,9 @@ class Predios extends Component
     public $regionales = [];
     public $municipios = [];
 
+    public $predioId;
+
+
     
     public function mount()
     {
@@ -83,21 +86,21 @@ class Predios extends Component
     public function edit($id)
     {
         $predio = Predio::findOrFail($id);
-        $this->id = $id;
+        $this->predioId = $predio->id;
         //$this->geom = $geom->geom;        
         //$this->objectid = $objectid->objectid;
-        $this->nombre = $nombre->nombre;
-        $this->matricula = $matricula->matricula;        
-        $this->regional = $regional->regional;
-        $this->municipio_ = $municipio_->municipio_;
-        $this->ha_sig = $ha_sig->ha_sig;
-        $this->ha_compra = $ha_compra->ha_compra;
-        $this->vallas = $vallas->vallas;
-        $this->estado_ref = $estado_ref->estado_ref;
-        $this->ha_refores = $ha_refores->ha_refores;
-        $this->aisla_mts = $aisla_mts->aisla_mts;
-        $this->regen_natu = $regen_natu->regen_natu;
-        $this->observacio = $observacio->observacio;
+        $this->nombre = $predio->nombre;
+        $this->matricula = $predio->matricula;        
+        $this->regional = $predio->regional;
+        $this->municipio_ = $predio->municipio_;
+        $this->ha_sig = $predio->ha_sig;
+        $this->ha_compra = $predio->ha_compra;
+        $this->vallas = $predio->vallas;
+        $this->estado_ref = $predio->estado_ref;
+        $this->ha_refores = $predio->ha_refores;
+        $this->aisla_mts = $predio->aisla_mts;
+        $this->regen_natu = $predio->regen_natu;
+        $this->observacio = $predio->observacio;
         //$this->shape_leng = $shape_leng->shape_leng;
         //$this->shape_area = $shape_area->shape_area;
 
@@ -125,5 +128,14 @@ class Predios extends Component
     public function closeModal()
     {
         $this->isOpen = false;
+    }
+
+    
+    protected $listeners = ['eliminarPredio'];
+
+    public function eliminarPredio($id)
+    {
+        Predio::findOrFail($id)->delete();
+        session()->flash('message', 'Registro eliminado correctamente.');
     }
 }
