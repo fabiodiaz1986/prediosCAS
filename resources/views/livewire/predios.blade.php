@@ -2,7 +2,7 @@
     <button wire:click="create" class="btn btn-success mb-3">
     Nuevo Predio
     <span wire:loading wire:target="create" class="spinner-border spinner-border-sm"></span>
-</button>
+    </button>
 
     @if(session()->has('message'))
         <div class="alert alert-success">{{ session('message') }}</div>
@@ -38,8 +38,8 @@
                                     Editar
                                     <span wire:loading wire:target="edit" class="spinner-border spinner-border-sm"></span>
                                 </button>
-                                <button class="btn btn-danger btn-sm" onclick="confirmarEliminacion({{ $predio->id }})">
-                                    Eliminar
+                                <button class="btn btn-info btn-sm" onclick="verMapaPredio({{ $predio->id }})">
+                                    VerMapa
                                     <span wire:loading wire:target="eliminarPredio" class="spinner-border spinner-border-sm"></span>
                                 </button>
                             </div>
@@ -107,5 +107,20 @@
             </div>
         </div>        
     @endif
+
+   <!-- Modal del visor de mapa -->
+    <div class="modal fade" id="mapaModal" tabindex="-1" aria-labelledby="mapaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="mapaModalLabel">Ubicación del Predio</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+              <div id="visor-mapa" style="height: 400px;"></div>
+            </div>
+          </div>
+        </div>
+    </div>
 </div>
 
