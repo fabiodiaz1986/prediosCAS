@@ -1,5 +1,5 @@
 <div class="container mt-4">
-    <button wire:click="create" class="btn btn-success mb-3">
+    <button wire:click="create" onclick="editarPredio('s')" class="btn btn-success mb-3">
     Nuevo Predio
     <span wire:loading wire:target="create" class="spinner-border spinner-border-sm"></span>
     </button>
@@ -34,13 +34,11 @@
                         <td>{{ $predio->ha_sig }}</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <button wire:click="edit({{ $predio->id }})" class="btn btn-warning btn-sm">
+                                <button wire:click="edit({{ $predio->id }})" onclick="editarPredio('s')" class="btn btn-warning btn-sm">
                                     Editar
-                                    <span wire:loading wire:target="edit" class="spinner-border spinner-border-sm"></span>
                                 </button>
                                 <button class="btn btn-info btn-sm" onclick="verMapaPredio({{ $predio->id }})">
                                     VerMapa
-                                    <span wire:loading wire:target="eliminarPredio" class="spinner-border spinner-border-sm"></span>
                                 </button>
                             </div>
                         </td>
@@ -107,6 +105,13 @@
             </div>
         </div>        
     @endif
+
+    <!-- Spinner Global -->
+    <div id="global-loading-spinner" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255, 255, 255, 0.6); z-index: 2000; align-items: center; justify-content: center;">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
 
    <!-- Modal del visor de mapa -->
     <div class="modal fade" id="mapaModal" tabindex="-1" aria-labelledby="mapaModalLabel" aria-hidden="true">

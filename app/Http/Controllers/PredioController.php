@@ -9,7 +9,7 @@ class PredioController extends Controller
 {
     public function geojson($id)
     {
-        $predio = Predio::selectRaw('id, nombre, ST_AsGeoJSON(geom) as geom')->findOrFail($id);
+        $predio = Predio::selectRaw('id, nombre, ST_AsGeoJSON(ST_Transform(geom, 4326)) as geom')->findOrFail($id);
 
         if (!$predio->geom) {
             return response()->json(['error' => 'No hay geometría disponible.'], 404);

@@ -47,16 +47,17 @@
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
         <!-- Proj4js y Proj4Leaflet -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.6/proj4.js"></script>
-        <script src="https://unpkg.com/proj4leaflet"></script>
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.6/proj4.js"></script>-->
+        <!-- <script src="https://unpkg.com/proj4leaflet"></script>-->
 
         <!-- Scripts personalizados -->
         <script>
             document.addEventListener('DOMContentLoaded', function () {
+                
                 window.confirmarEliminacion = function (id) {
                     Swal.fire({
-                        title: 'Eliminación de Prédio',
-                        text: "¿Está seguro de realizar la eliminación del registro con id: " + id + "?. Esta acción no se puede deshacer una vez la confirme.",
+                        title: 'Eliminación de Predio',
+                        text: "¿Está seguro de eliminar el registro con id: " + id + "? Esta acción no se puede deshacer.",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',
@@ -68,62 +69,66 @@
                         }
                     });
                 };
-
-                // Definición del sistema EPSG:3116
-                //proj4.defs("EPSG:3116", "+proj=tmerc +lat_0=4.596200416666666 +lon_0=-74.07750791666666 +k=1 +x_0=1000000 +y_0=1000000 +ellps=GRS80 +units=m +no_defs");
-/*
-                function reproyectarGeoJSON3116a4326(geojson) {
-                    const reproyectado = JSON.parse(JSON.stringify(geojson)); // Copia para no mutar el original
-
-                    if (geojson.geometry.type === "MultiPolygon") {
-                        reproyectado.geometry.coordinates = geojson.geometry.coordinates.map(polygon =>
-                            polygon.map(ring =>
-                                ring.map(coord => {
-                                    const [x, y] = coord;
-                                    const [lon, lat] = proj4("EPSG:3116", "EPSG:4326", [x, y]);
-                                    return [lon, lat];
-                                })
-                            )
-                        );
-                    }
-
-                    return reproyectado;
-                }
-*/
- window.verMapaPredio = function (id) {
-     fetch(`/predios/geojson/${id}`)
-        .then(res => res.json())
-        .then(data => {
-            const modalElement = document.getElementById('mapaModal');
-            if (!modalElement) {
-                console.error("El modal con id 'mapaModal' no se encontró.");
-                return;
-            }
-
-            // Abrir modal
-            const myModal = new bootstrap.Modal(modalElement);
-            myModal.show();
-
             
+                let mapa = null; // Variable global para controlar la instancia del mapa
 
-            // Esperar a que el modal se muestre completamente
-            modalElement.addEventListener('shown.bs.modal', function () {
-                // Limpiar contenedor del mapa por si ya se cargó antes
-                document.getElementById('visor-mapa').innerHTML = "";
+                window.verMapaPredio = function (id) {
+                    const globalSpinner = document.getElementById('global-loading-spinner');
+                    globalSpinner.style.display = 'flex'; // Mostrar el spinner inmediatamente
 
-                // Crear mapa con Leaflet
-                const mapa = L.map('visor-mapa').setView([7.065, -73.851], 15);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19
-                }).addTo(mapa);
+                    fetch(`/predios/geojson/${id}`)
+                        .then(res => res.json())
+                        .then(data => {
+                        const modalElement = document.getElementById('mapaModal');
+                        if (!modalElement) {
+                            console.error("El modal con id 'mapaModal' no se encontró.");
+                            globalSpinner.style.display = 'none';
+                            return;
+                        }
+                    
+                        const myModal = new bootstrap.Modal(modalElement);
+                        myModal.show();
+                    
+                        modalElement.addEventListener('shown.bs.modal', function () {
+                            if (mapa) {
+                                mapa.remove();
+                                mapa = null;
+                            }
+                        
+                            // Limpia visor
+                            document.getElementById('visor-mapa').innerHTML = "";
+                        
+                            mapa = L.map('visor-mapa').setView([7.065, -73.851], 15);
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                maxZoom: 19
+                            }).addTo(mapa);
+                        
+                            const geoJsonLayer = L.geoJSON(data.geometry).addTo(mapa);
+                            mapa.fitBounds(geoJsonLayer.getBounds());
+                        
+                            // Oculta el spinner después de que todo esté listo
+                            globalSpinner.style.display = 'none';
+                        }, { once: true });
+                    })
+                    .catch(err => {
+                        console.error("Error al cargar el mapa:", err);
+                        globalSpinner.style.display = 'none';
+                    });
+                };
 
-                L.geoJSON(data.geometry).addTo(mapa);
-                
-            }, { once: true }); // `once` asegura que este listener solo se use una vez
-        });
-}
-});
-        </script>
+
+                window.editarPredio = function(id) {
+                    document.getElementById('global-loading-spinner').style.display = 'flex';
+
+                    // Emitimos evento Livewire para editar
+                    Livewire.dispatch('edit', id);
+                };
+                    // Ocultamos el spinner una vez Livewire haya terminado de procesar
+                    Livewire.on('editado', () => {
+                        document.getElementById('global-loading-spinner').style.display  = 'none';
+                    });
+            });
+            </script>
 
         @livewireScripts
     </body>
