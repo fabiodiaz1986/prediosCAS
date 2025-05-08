@@ -1,15 +1,22 @@
 <div class="container mt-4">
-    <button wire:click="create" onclick="editarPredio('s')" class="btn btn-success mb-3">
+    <!--<button wire:click="create" onclick="editarPredio('s')" class="btn btn-success mb-3">
     Nuevo Predio
     <span wire:loading wire:target="create" class="spinner-border spinner-border-sm"></span>
-    </button>
+    </button>-->
+
+    <div class="d-flex justify-content-end align-items-center mb-2">
+        <label for="filtroPredios" class="me-2 mb-0">
+          <i class="bi bi-search"></i> Buscar:
+        </label>
+        <input type="text" id="filtroPredios" class="form-control form-control-sm w-50" placeholder="Buscar en la tabla...">
+      </div>
 
     @if(session()->has('message'))
         <div class="alert alert-success">{{ session('message') }}</div>
     @endif
 
     <div class="table-responsive">
-        <table class="table table-striped table-bordered">
+        <table class="table table-striped table-bordered" id="tablaPredios">
             <thead class="table-dark">
                 <tr>
                     <th class="text-center">Id</th>
@@ -34,10 +41,10 @@
                         <td>{{ $predio->ha_sig }}</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <button wire:click="edit({{ $predio->id }})" onclick="editarPredio('s')" class="btn btn-warning btn-sm">
+                                <!--<button wire:click="edit({{ $predio->id }})" onclick="editarPredio('s')" class="btn btn-warning btn-sm">
                                     Editar
-                                </button>
-                                <button class="btn btn-info btn-sm" onclick="verMapaPredio({{ $predio->id }})">
+                                </button>-->
+                                <button class="btn btn-warning btn-sm" onclick="verMapaPredio({{ $predio->id }})">
                                     VerMapa
                                 </button>
                             </div>
@@ -129,3 +136,15 @@
     </div>
 </div>
 
+
+<script>
+    document.getElementById('filtroPredios').addEventListener('input', function () {
+        const valor = this.value.toLowerCase();
+        const filas = document.querySelectorAll('#tablaPredios tbody tr');
+        
+        filas.forEach(fila => {
+            const textoFila = fila.innerText.toLowerCase();
+            fila.style.display = textoFila.includes(valor) ? '' : 'none';
+        });
+    });
+</script>
